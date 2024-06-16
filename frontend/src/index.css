@@ -1,13 +1,131 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap");
+:root {
+  --primary: #1aac83;
+  --error: #e7195a;
+}
 body {
+  background: #f1f1f1;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Poppins";
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.pages {
+  width: 90vw;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+label,
+input,
+select {
+  display: block;
+}
+label {
+  margin-top: 10px;
+}
+select {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+input {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border: none;
+  outline: none;
+}
+
+form button {
+  background: var(--primary);
+  border: 0;
+  color: #fff;
+  padding: 10px;
+  margin: 10px auto;
+  font-family: "Poppins";
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.input_option{ 
+  display: flex;
+  margin-bottom: 0 0 20px 10px;
+  padding-left: 10px;
+}
+.input_option > input {
+  max-width: 20px;
+  margin-right: 10px;
+}
+
+.input_box{
+  display: flex;
+  justify-content: baseline;
+  align-items: baseline;
+  border: 1px solid #ddd;
+  padding-left: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+div.error {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+div.msg {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.material-symbols-outlined {
+  vertical-align: middle; 
+  line-height: 1; 
+  margin-right: 5px; 
+}
+
+.parkDetails{
+  margin-bottom: 20px;
+}
+
+.parks_info{
+  display: flex;
+  justify-content: space-between;
+}
+
+.serachParkForm,
+.parks,
+.signup,
+.login,
+.emailsForPark {
+  width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.addParkAdmin, .addVehicle, .searchParking{
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
 }
