@@ -10,7 +10,7 @@
   justify-content: space-between;
   align-items: baseline;
   position:absolute;
-  margin-top: 200px;
+  margin-top: 170px;
   box-shadow: 0px 10px 10px 5px #ccc;
   border-radius: 20px;
   background-color: #C8E6C9;
@@ -151,9 +151,9 @@ input:invalid:focus{
 
 
 .vr{
-  width: 1px;
+  width: 1.5px;
   background-color: #272424;
-  height:40%;
+  height:100%;
   top: 65%;
 }
 
@@ -161,7 +161,7 @@ input:invalid:focus{
   background-color: #1aac83;
   padding: 10px;
   border-radius: 8px;
-  width: 80%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -191,7 +191,10 @@ span{
 
 @media (width<830px){
   .user .popup{
-    margin-top: 300px;
+    margin-top: -100px;
     width: 460px;
+  }
+  .user .buttons, .user .payment{
+    flex-direction: column;
   }
 }

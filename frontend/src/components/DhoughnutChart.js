@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 
 const DoughnutChart = () => {
+    const years=[2021,2022,2023,2024];
+    const months=['ALL','JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     const chartRef=useRef(null);
     const chartInstance=useRef(null);
     const [values,setValues]=useState([]);
     const [label,setLabel]=useState([]);
-    const [year,setYear] = useState('2022');
+    const [year,setYear] = useState('2021');
     const [month,setMonth] = useState('ALL');
     const url=`http://localhost:4000/api/care/piedata`;
     const [piedata,setPiedata]=useState([]);
@@ -99,28 +101,14 @@ const DoughnutChart = () => {
             <div className='option-container'>
             <span>Year</span>
                 <div className='option1'>
-                        <select className="select" value={year} onChange={handleselectChange}>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
+                    <select className="select" value={year} onChange={handleselectChange}>
+                        {years.map((year,key)=>{return <option key={key} >{year}</option>})}
                     </select>
                 </div>
                 <span>Month</span>
                 <div className='option2'>
-                        <select className="select" value={month} onChange={handleselectChange}>
-                        <option value="ALL">ALL</option>
-                        <option value="JAN">JAN</option>
-                        <option value="FEB">FEB</option>
-                        <option value="MAR">MAR</option>
-                        <option value="APR">APR</option>
-                        <option value="MAY">MAY</option>
-                        <option value="JUN">JUN</option>
-                        <option value="JUL">JUL</option>
-                        <option value="AUG">AUG</option>
-                        <option value="SEP">SEP</option>
-                        <option value="OCT">OCT</option>
-                        <option value="NOV">NOV</option>
-                        <option value="DEC">DEC</option>
+                    <select className="select" value={month} onChange={handleselectChange}>
+                        {months.map((month,key)=>{return <option key={key}>{month}</option>})}
                     </select>
                 </div>
             </div>

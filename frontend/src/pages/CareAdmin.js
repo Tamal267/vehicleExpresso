@@ -3,8 +3,7 @@ import '../styles/chart.css'
 import DoughnutChart from '../components/DhoughnutChart';
 import LineChart from '../components/LineChart';
 import LongRecord from '../components/LongRecord';
-import ShortRecord from '../components/ShortRecord';
-
+import { Link } from 'react-router-dom';
 
 
 const CareAdmin = () => {
@@ -22,13 +21,13 @@ const CareAdmin = () => {
             <br></br>
             <br></br>
             <br></br>
-              <h2>Shorterm Record </h2>
-              <hr/>
-              <ShortRecord/>
+            <Link to="/vehiclecare/admin/short-record">
+              <button>Shorterm Record</button>
+            </Link>
+            <Link to="/vehiclecare/admin/long-record">
+              <button>Longterm Record</button>
+            </Link>
             </div>
-            <h2>Longterm Record (MAINTENANCE INFO)</h2>
-            <hr/>
-            <LongRecord/>
         </div>
      );
 }

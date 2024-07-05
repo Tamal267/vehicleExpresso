@@ -27,7 +27,18 @@
   color:#e17542;
   font-weight: bold;
 }
+.admin button{
+  background-color:  azure;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 30px 30px;
+  margin: 50px;
+}
 
+.admin button:hover{
+  background-color: #ffebbd;
+  scale: 1.1;
+}
 .admin .chart-comps{
   display: flex;
   justify-content: space-between;

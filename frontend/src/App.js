@@ -21,6 +21,8 @@ import Signup from './pages/Signup'
 import UserParkHistory from './pages/UserParkHistory'
 import VehicleCare from './pages/VehicleCare'
 import VehicleEntryExit from './pages/VehicleEntryExit'
+import ShortRecord from './components/ShortRecord'
+import LongRecord from './components/LongRecord'
 
 function App() {
   const { user } = useAuthContext()
@@ -64,6 +66,14 @@ function App() {
               <Route
                 path="/vehiclecare/admin"
                 element={user ? <CareAdmin /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/vehiclecare/admin/short-record"
+                element={user ? <ShortRecord /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/vehiclecare/admin/long-record"
+                element={user ? <LongRecord /> : <Navigate to="/login" />}
               />
               <Route
                 path="/vehiclecare/user"

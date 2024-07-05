@@ -269,6 +269,12 @@ const longUser = async(req,res)=>{
             finaldate
         });
         console.log('Successful Insertion in longtermcare!!');
+        await runQuery(`INSERT INTO maintenance_info(MAINTENANCE_ID)
+        VALUES (:serviceid)`,
+        {   
+            serviceid
+        });
+        console.log('Successful Insertion in maintenance_info!!');
         await runQuery(`INSERT INTO takes_care (SERVICE_ID, VEHICLENO,SERVICE_DATE)
         VALUES (:serviceid, :vehicleno, TO_DATE(:service_date,'yyyy-mm-dd'))`,
         {   
@@ -297,9 +303,9 @@ const longUser = async(req,res)=>{
 }
 
 
-const tableFetch = async(req,res)=>{
+const shortTableFetch = async(req,res)=>{
     try{
-        const data = await runQuery(`select u.name,vi.vehicleno,ct.service_id,tc.service_date,
+        const data = await runQuery(`select u.name,vi.vehicleno,ct.service_id,to_char(tc.service_date,'yyyy-mm-dd') as service_date,
         sc.repair,sc.wash,ct.mechanic_name,ct.servicing_cost,sc.completed,sc.labor_hours
         from users u,vehicle_info vi,takes_care tc,care_transac ct,shorttermcare sc
         where u.userid=vi.vehicle_owner and
@@ -315,19 +321,56 @@ const tableFetch = async(req,res)=>{
     }
 }
 
-const updateTable = async(req,res)=>{
-    const{
-        service_id,
-        mechanic,
-        repairCost,
-        washCost,
-        labourHour,
-        laborCost,
-        status
-    }=req.body;
-    const servicing_cost = Number(repairCost+washCost+(labourHour*laborCost));
+const longTableFetch =async(req,res)=>{
     try{
-        console.log(req.body);
+
+        const data = await runQuery(`select u.name,ct.service_id,vi.vehicleno,to_char(tc.service_date,'yyyy-mm-dd') as service_date,to_char(lc.final_date,'yyyy-mm-dd') as final_date,
+        ct.mechanic_name,lc.odometer_reading,lc.maintenance_category,lc.insurance_provider,to_char(lc.insurance_exp_date,'yyyy-mm-dd') as insurance_exp_date,ct.servicing_cost
+        from users u,vehicle_info vi,takes_care tc,care_transac ct,longtermcare lc
+        where u.userid=vi.vehicle_owner and
+        vi.vehicleno=tc.vehicleno and
+        tc.service_id=ct.service_id and
+        ct.service_id=lc.longterm_id
+        order by ct.service_id`,{});
+
+        res.status(200).json({"table": data});
+    }catch(err){
+        console.error(err);
+        res.status(500).send('Error fetching the long-data');
+    }
+}
+
+const maintenanceinfoFetch =async(req,res)=>{
+    try{
+        const {service_id}=req.body;
+        console.log(service_id);
+        const data = await runQuery(`select basic_desc,premium_desc,flag,to_char(last_service_date,'yyyy-mm-dd') as last_service_date,to_char(next_service_date,'yyyy-mm-dd') as next_service_date
+        from maintenance_info where
+        maintenance_id=:service_id
+        order by last_service_date`,{service_id});
+
+        res.status(200).json({"data":data});
+    }catch(err){
+        console.error(err);
+        res.status(500).send('Error fetching the maintenance info');
+    }
+}
+
+
+const updateShortTable = async(req,res)=>{
+    try{
+        const{
+            service_id,
+            mechanic,
+            repairCost,
+            washCost,
+            labourHour,
+            laborCost,
+            status
+        }=req.body;
+
+        const servicing_cost =repairCost+washCost+(labourHour*laborCost);
+
         await runQuery(`
         DECLARE
             v_repair SHORT_CARE;
@@ -360,9 +403,46 @@ const updateTable = async(req,res)=>{
         res.status(200).json({data1,data2});
     }catch(err){
         console.error(err);
-        res.status(500).send('Error updating the data');
+        res.status(500).send('Error updating the short-table data');
     }
 }
+
+const updateLongTable = async(req,res)=>{
+    try{
+        const {
+            service_id,
+            mechanic,
+            totalCost,
+            insExpdate,
+            odometerRead
+        }=req.body;
+        console.log(insExpdate);
+        await runQuery(`update care_transac 
+        set mechanic_name=:mechanic,servicing_cost=:totalCost 
+        where service_id=:service_id`,{mechanic,totalCost,service_id});
+        //insExpdate=dateFormat();
+        if(insExpdate){
+            console.log('hello');
+            await runQuery(`update longtermcare 
+            set odometer_reading=:odometerRead,insurance_exp_date=TO_DATE(:insExpdate,'yyyy-mm-dd')
+            where longterm_id=:service_id`,{odometerRead,insExpdate,service_id});
+        }
+        else{
+            await runQuery(`update longtermcare 
+            set odometer_reading=:odometerRead,insurance_exp_date=null
+            where longterm_id=:service_id`,{odometerRead,service_id});
+        }
+        const data1 = await runQuery(`select * from care_transac
+        where service_id=:service_id`,{service_id});
+        const data2 = await runQuery(`select * from longtermcare
+        where longterm_id=:service_id`,{service_id});
+        res.status(200).json({data1,data2});
+    }catch(err){
+        console.error(err);
+        res.status(500).send('Error updating the long-table data');
+    }
+}
+
 
 
 module.exports={
@@ -370,7 +450,10 @@ module.exports={
     lineData,
     shortUser,
     longUser,
-    tableFetch,
-    updateTable
+    shortTableFetch,
+    longTableFetch,
+    maintenanceinfoFetch,
+    updateShortTable,
+    updateLongTable
 }
 

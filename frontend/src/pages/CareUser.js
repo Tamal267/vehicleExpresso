@@ -328,14 +328,14 @@ const CareUser = () => {
           </fieldset>
         </form>
         )}
-        <div className="title">
-        <span>History</span>
-        <span>Bill</span>
-        </div>
         <div className="payment">
+        <div>
+        <div className="title">
+            <span>History</span>
+          </div>
           <table className="history">
             <thead>
-              <th>----Description-------</th>
+              <th>Description</th>
               <th>Date</th>
             </thead>
             <tbody>
@@ -343,10 +343,15 @@ const CareUser = () => {
               <td>adassa</td>
             </tbody>
           </table>
+          </div>
           <div className="vr"></div>
+          <div>
+          <div className="title">
+            <span>Bill</span>
+          </div>
           <table className="Bill">
             <thead>
-              <th>----Description-------</th>
+              <th>Description</th>
               <th>Date</th>
             </thead>
             <tbody>
@@ -354,6 +359,7 @@ const CareUser = () => {
               <td>adassa</td>
             </tbody>
           </table>
+          </div>
         </div>
     </div>
   );
