@@ -1,4 +1,4 @@
-import { useState ,useRef} from "react";
+import { useState ,useRef, useEffect} from "react";
 import '../styles/user.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +7,8 @@ import { useAuthContext } from '../hooks/useAuthContext';
 
 const CareUser = () => {
     const { user } = useAuthContext();
+    const [data,setData]=useState('');
+    const [error,setError] = useState(null);
     const longtermRef = useRef(null);
     const shorttermRef = useRef(null);
     const [visible1,setVisible1]=useState(false);
@@ -15,11 +17,8 @@ const CareUser = () => {
     const [exit2,setExit2]=useState(true);
     const shorturl=`http://localhost:4000/api/care/shortuser`;
     const longurl=`http://localhost:4000/api/care/longuser`;
+    const vehicleurl=`http://localhost:4000/api/care/vehicleno`;
     const [no,setNo]=useState('');
-    const [type,setType]=useState('');
-    const [model,setModel]=useState('');
-    const [company,setCompany]=useState('');
-    const [color,setColor]=useState('');
     const [date,setDate]=useState('');
     const [repairtype,setRepairtype]=useState('');
     const [washtype,setWashtype]=useState('');
@@ -32,12 +31,33 @@ const CareUser = () => {
     const [insExp,setInsExp]=useState('');
     const [odometer,setOdometer]=useState('');
 
+    useEffect(()=>{
+      const getVehicleno = async()=>{
+        try{
+          const response = await fetch(vehicleurl,{
+            method: 'POST',
+            headers: {
+              'Content-Type' : 'application/json' 
+            },
+            body: JSON.stringify({
+              vehicleOwner: user.id
+            })
+          })
+          if(!response.ok) throw new Error('Error occured')
+          const jsonData= await response.json();
+          setData(jsonData);
+          setNo(jsonData[0].VEHICLENO);
+          console.log(jsonData);
+        }catch(err){
+          console.error(err);
+          setError(err.message);
+        }
+      }
+      getVehicleno();
+    },[])
+
     const clear = ()=>{
-      setNo("");
-      setType("");
-      setModel("");
-      setCompany("");
-      setColor("");
+      setNo(data[0].VEHICLENO);
       setDate("");
       setRepair(false);
       setRepairtype("");
@@ -79,12 +99,10 @@ const CareUser = () => {
     const HandleLongExit = ()=>{
       setVisible1(!visible1);
       setExit1(!exit1);
-      //clear();
     }
     const HandleShortExit = ()=>{
       setVisible2(!visible2);
       setExit2(!exit2);
-      //clear();
     }
 
 
@@ -112,6 +130,7 @@ const CareUser = () => {
           const jsonData = await response.json();
           console.log(jsonData);
           promise(jsonData.service_id);
+          clear();
         }catch(err){
           console.error('Error fetching data : ',err);
           warning(`Failure! Try again!`);
@@ -128,10 +147,10 @@ const CareUser = () => {
                   body: JSON.stringify({
                     vehicleno: no,
                     vehicleowner: user.id,
-                    vehicletype: type,
-                    vehiclemodel: model,
-                    vehiclecompany: company,
-                    vehiclecolor: color,
+                    // vehicletype: type,
+                    // vehiclemodel: model,
+                    // vehiclecompany: company,
+                    // vehiclecolor: color,
                     date: date,
                     repairtype: repairtype,
                     washtype: washtype
@@ -141,6 +160,7 @@ const CareUser = () => {
           if (!response.ok) throw new Error('Failed to fetch data');
           const jsonData = await response.json();
           promise(jsonData.service_id);
+          clear();
         }catch(err){
           console.error('Error fetching data : ',err);
           warning(`Failure! Try again!`);
@@ -150,13 +170,28 @@ const CareUser = () => {
 
       const HandleLongSubmit = (e)=>{
         e.preventDefault();
-        HandleLongExit();
-        insertLongData();
+        if(!premium && !basic){
+          console.log('Select a category!');
+        }
+        else if(!date){
+          console.log('Select the start date!');
+        }
+        else if(!odometer){
+          console.log('Odometer read is missing!');
+        }
+        else if(!finaldate){
+          console.log('Select the final date!');
+        }
+        else{
+          insertLongData();
+          HandleLongExit();
+        }
       } 
+
       const HandleShortSubmit = (e)=>{
         e.preventDefault();
-        if(!no || !type || !model || !company || !color || !date){
-          console.log('All fields must be filled up!');
+        if(!date){
+          console.log('Select a date!');
         }
         else if(!repair && !wash){
           console.log('Choose At least one service!');
@@ -211,24 +246,10 @@ const CareUser = () => {
               <legend>ENTER VEHICLE NO:</legend>
               <div className="block">
                 <label htmlFor="vehicleno">Vehicle No:</label>
-                <input type="text" id="vehicleno" name="vehicleno" onChange={(e)=>{setNo(e.target.value)}} value={no}/>
+                <select name="vehicleno" value={no} onChange={(e)=>{setNo(e.target.value)}}>
+                  {!error && Array.isArray(data) && data.map((vehicle,key)=>{ return <option key={key} value={vehicle.VEHICLENO}>{vehicle.VEHICLENO}</option>})}
+                </select>
               </div>
-              {/* <div className="block">
-              <label htmlFor="vehicletype">Vehicle Type:</label>
-              <input type="text" id="vehicletype" name="vehicletype" onChange={(e)=>{setType(e.target.value)}} value={type}/>
-              </div>
-              <div className="block">
-              <label htmlFor="vehiclemodel">Vehicle Model:</label>
-              <input type="text" id="vehiclemodel" name="vehiclemodel" onChange={(e)=>{setModel(e.target.value)}} value={model}/>
-              </div>
-              <div className="block">
-                <label htmlFor="vehiclecompany">Vehicle Company:</label>
-                <input type="text" id="vehiclecompany" name="vehiclecompany" onChange={(e)=>{setCompany(e.target.value)}} value={company}/>
-              </div>
-              <div className="block">
-                <label htmlFor="vehiclecolor">Vehicle Color:</label>
-                <input type="text" id="vehiclecolor" name="vehiclecolor" onChange={(e)=>{setColor(e.target.value)}} value={color}/>
-              </div> */}
               <legend>MAINTENANCE INFO:</legend>
               <div className="block">
                 <label >Category:</label>
@@ -284,24 +305,10 @@ const CareUser = () => {
             <legend>ENTER VEHICLE INFO</legend>
             <div className="block">
               <label htmlFor="vehicleno">Vehicle No:</label>
-              <input type="text" id="vehicleno" name="vehicleno" onChange={(e)=>{setNo(e.target.value)}} value={no}/>
+              <select name="vehicleno" value={no} onChange={(e)=>{setNo(e.target.value)}}>
+                  {!error && Array.isArray(data) && data.map((vehicle,key)=>{ return <option key={key}>{vehicle.VEHICLENO}</option>})}
+              </select>
             </div>
-            {/* <div className="block">
-              <label htmlFor="vehicletype">Vehicle Type:</label>
-              <input type="text" id="vehicletype" name="vehicletype" onChange={(e)=>{setType(e.target.value)}} value={type}/>
-            </div>
-            <div className="block">
-            <label htmlFor="vehiclemodel">Vehicle Model:</label>
-            <input type="text" id="vehiclemodel" name="vehiclemodel" onChange={(e)=>{setModel(e.target.value)}} value={model}/>
-            </div>
-            <div className="block">
-              <label htmlFor="vehiclecompany">Vehicle Company:</label>
-              <input type="text" id="vehiclecompany" name="vehiclecompany" onChange={(e)=>{setCompany(e.target.value)}} value={company}/>
-            </div>
-            <div className="block">
-              <label htmlFor="vehiclecolor">Vehicle Color:</label>
-              <input type="text" id="vehiclecolor" name="vehiclecolor" onChange={(e)=>{setColor(e.target.value)}} value={color}/>
-            </div> */}
             <div className="block">
               <label htmlFor="servicedate">Service Date:</label>
               <input type="date" id="servicedate" name="servicedate" onChange={(e)=>{setDate(e.target.value)}} value={date}/>
@@ -355,7 +362,7 @@ const CareUser = () => {
               <th>Date</th>
             </thead>
             <tbody>
-              <td>adaqweqweqwssa</td>
+              <td>adaqwe</td>
               <td>adassa</td>
             </tbody>
           </table>
@@ -367,3 +374,24 @@ const CareUser = () => {
 
 export default CareUser;
 
+
+
+
+
+
+/* <div className="block">
+              <label htmlFor="vehicletype">Vehicle Type:</label>
+              <input type="text" id="vehicletype" name="vehicletype" onChange={(e)=>{setType(e.target.value)}} value={type}/>
+            </div>
+            <div className="block">
+            <label htmlFor="vehiclemodel">Vehicle Model:</label>
+            <input type="text" id="vehiclemodel" name="vehiclemodel" onChange={(e)=>{setModel(e.target.value)}} value={model}/>
+            </div>
+            <div className="block">
+              <label htmlFor="vehiclecompany">Vehicle Company:</label>
+              <input type="text" id="vehiclecompany" name="vehiclecompany" onChange={(e)=>{setCompany(e.target.value)}} value={company}/>
+            </div>
+            <div className="block">
+              <label htmlFor="vehiclecolor">Vehicle Color:</label>
+              <input type="text" id="vehiclecolor" name="vehiclecolor" onChange={(e)=>{setColor(e.target.value)}} value={color}/>
+            </div> */

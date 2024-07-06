@@ -137,42 +137,14 @@ const lineData = async(req,res)=>{
 }
 
 const shortUser = async(req,res)=>{
-    let {
-        vehicleno,
-        vehicleowner,
-        vehicletype,
-        vehiclemodel,
-        vehiclecompany,
-        vehiclecolor,
-        date,
-        repairtype,
-        washtype}=req.body;
-
-        vehicleno = vehicleno.toUpperCase();
-        vehicletype = vehicletype.toUpperCase();
-        vehiclecompany = vehiclecompany.toUpperCase();
-        vehiclemodel = vehiclemodel.toUpperCase();
-        vehiclecolor = vehiclecolor.toUpperCase();
     try{
-        const exists=await runQuery(
-        `select * from vehicle_info 
-        where VEHICLENO = :vehicleno`,{vehicleno});
-
-        if(exists.length===0){
-            await runQuery(`insert into vehicle_info (VEHICLENO, VEHICLE_OWNER, VEHICLETYPE, VEHICLE_MODEL, VEHICLE_COMPANY, VEHICLE_COLOR)
-            values(:vehicleno,:vehicleowner,:vehicletype,:vehiclemodel,:vehiclecompany,:vehiclecolor)`,
-            {   vehicleno,
-                vehicleowner,
-                vehicletype,
-                vehiclemodel,
-                vehiclecompany,
-                vehiclecolor,
-            });
-            console.log('Successful Insertion in vehicle info!!');
-        }else{
-            console.log('Already exists!!');
-        }
-
+        let {
+            vehicleno,
+            date,
+            repairtype,
+            washtype}=req.body;
+            vehicleno = vehicleno.toUpperCase();
+            console.log(vehicleno);
         const data=await runQueryOutBinds(`insert into care_transac(MECHANIC_NAME,SERVICE_TYPE,SERVICING_COST)
         values('Not Selected','shortterm',0)
         returning SERVICE_ID INTO :service_id`,
@@ -210,22 +182,19 @@ const shortUser = async(req,res)=>{
 
 
 const longUser = async(req,res)=>{
-    let {
-        vehicleno,
-        vehicleowner,
-        date,
-        main_category,
-        finaldate,
-        ins_prov,
-        ins_expdate,
-        odometer}=req.body;
-
-        vehicleno = vehicleno.toUpperCase();
-        // vehicletype = vehicletype.toUpperCase();
-        // vehiclecompany = vehiclecompany.toUpperCase();
-        // vehiclemodel = vehiclemodel.toUpperCase();
-        // vehiclecolor = vehiclecolor.toUpperCase();
     try{
+        let {
+            vehicleno,
+            vehicleowner,
+            date,
+            main_category,
+            finaldate,
+            ins_prov,
+            ins_expdate,
+            odometer}=req.body;
+        //vehicleno = vehicleno.toUpperCase();
+
+        console.log(vehicleno);
         const exists=await runQuery(
         `select * from vehicle_info 
         where VEHICLENO = :vehicleno AND VEHICLE_OWNER = :vehicleowner`,{vehicleno,vehicleowner});
@@ -443,7 +412,17 @@ const updateLongTable = async(req,res)=>{
     }
 }
 
-
+const availVehicle=async(req,res)=>{
+    try{
+        const {vehicleOwner}=req.body;
+        const data = await runQuery(`select vehicleno 
+        from vehicle_info where vehicle_owner=:vehicleOwner`,{vehicleOwner});
+        res.status(200).json(data);
+    }catch(err){
+        console.error(err);
+        res.status(500).send('Fail to fetch vehicle no');
+    }
+}
 
 module.exports={
     pieData,
@@ -454,6 +433,34 @@ module.exports={
     longTableFetch,
     maintenanceinfoFetch,
     updateShortTable,
-    updateLongTable
+    updateLongTable,
+    availVehicle
 }
 
+
+
+
+
+
+
+
+
+
+
+
+// const exists=await runQuery(
+        // `select * from vehicle_info 
+        // where VEHICLENO = :vehicleno`,{vehicleno});
+
+        // if(exists.length===0){
+        //     // await runQuery(`insert into vehicle_info (VEHICLENO, VEHICLE_OWNER, VEHICLETYPE, VEHICLE_MODEL, VEHICLE_COMPANY, VEHICLE_COLOR)
+        //     // values(:vehicleno,:vehicleowner,:vehicletype,:vehiclemodel,:vehiclecompany,:vehiclecolor)`,
+        //     // {   vehicleno,
+        //     //     vehicleowner,
+        //     //     vehicletype,
+        //     //     vehiclemodel,
+        //     //     vehiclecompany,
+        //     //     vehiclecolor,
+        //     // });
+        //     console.log('Successful Insertion in vehicle info!!');
+        // }
