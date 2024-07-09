@@ -7,7 +7,7 @@ const LineCharts = () => {
     const months=['ALL','JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
-    const [year, setYear] = useState('2022');
+    const [year, setYear] = useState('2021');
     const [month, setMonth] = useState('ALL');
     const [values,setValues] = useState([]);
     const [labels,setLabels] = useState([]);

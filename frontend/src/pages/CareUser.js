@@ -346,8 +346,8 @@ const CareUser = () => {
               <th>Date</th>
             </thead>
             <tbody>
-              <td>adassa</td>
-              <td>adassa</td>
+              <td>tire ,glass repair</td>
+              <td>04/12/2023</td>
             </tbody>
           </table>
           </div>
@@ -358,8 +358,8 @@ const CareUser = () => {
           </div>
           <table className="Bill">
             <thead>
-              <th>Description</th>
-              <th>Date</th>
+              <th>cost =12000</th>
+              <th>04/02/2023</th>
             </thead>
             <tbody>
               <td>adaqwe</td>
